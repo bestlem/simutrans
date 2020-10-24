@@ -1,4 +1,4 @@
-name: Nightly build MacOS
+name: Nightly build MacOS (without freetype)
 
 on: [push]
 
@@ -12,20 +12,34 @@ jobs:
 
     - name: install_dependencies
       run: | 
-        #curl http://www.libsdl.org/release/SDL2-2.0.10.dmg > SDL2-2.0.10.dmg
-        #hdiutil attach SDL2-2.0.10.dmg >>/dev/stderr
-        #sudo cp -R -v /Volumes/SDL2/SDL2.framework /Library/Frameworks/
-        #sudo ls /Library/Frameworks/ >>/dev/stderr
-        #hdiutil eject /Volumes/SDL2 >>/dev/stderr 
-        brew install autoconf automake freetype libpng pkg-config sdl2
+        curl http://www.libsdl.org/release/SDL2-2.0.10.dmg > SDL2-2.0.10.dmg
+        hdiutil attach SDL2-2.0.10.dmg >>/dev/stderr
+        sudo cp -R -v /Volumes/SDL2/SDL2.framework /Library/Frameworks/
+        sudo ls /Library/Frameworks/ >>/dev/stderr
+        hdiutil eject /Volumes/SDL2 >>/dev/stderr 
+        brew install autoconf
+# freetype library is supposed to be on the system (but I did not found it)
+# Well, I can download and "install" the header to compile
+#        curl -L "https://downloads.sourceforge.net/project/freetype/freetype2/2.10.1/ft2101.zip?&use_mirror=autoselect" > ft2101.zip
+#        unzip -oa ft2101.zip '*.h'
+# But the dylib is not where it should be after installing xcode?!? (Server issue?)
+# Thus no freetype :(
+# not easy to install miniupnpc for others, so no UPnP support for macOS
+#        brew install miniupnpc
 
-    - name: build
+    - name: setup
       run: |
-        autoreconf -ivf
-        ./configure CC=clang
-        make BACKEND=sdl2 MULTI_THREAD=1 OPTIMISE=1 OSTYPE=mac USE_FREETYPE=1 USE_UPNP=0 USE_ZSTD=0 AV_FOUNDATION=1
-        make OSX/getversion
+        autoconf 
+        ./configure
+        echo "CFLAGS = -F /Library/Frameworks -DREVISION=$(svn info --show-item revision svn://servers.simutrans.org/simutrans) " >>config.default
+        echo "LDFLAGS = -framework SDL2 -F /Library/Frameworks -I /Library/Frameworks/SDL2.framework/Headers " >>config.default
+        mv config.default cfd
+        sed 's/BACKEND = posix/#BACKEND = posix/' cfd | sed 's/#BACKEND = sdl2/BACKEND = sdl2/' > config.default
+        cat config.default >>/dev/stderr
 
+    - name: make
+      run: make
+      
     - name: distribute
       run: sh ./distribute.sh
 

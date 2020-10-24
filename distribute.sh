@@ -166,6 +166,7 @@ buildOSX()
 	# builds a bundle for MAC OS
 	mkdir -p "simutrans.app/Contents/MacOS"
 	mkdir -p "simutrans.app/Contents/Resources"
+    mkdir -p "simutrans.app/Contents/Frameworks"
 	cp $BUILDDIR$simexe   "simutrans.app/Contents/MacOS/simutrans"
 	strip "simutrans.app/Contents/MacOS/simutrans"
 	cp "../OSX/simutrans.icns" "simutrans.app/Contents/Resources/simutrans.icns"
@@ -177,22 +178,16 @@ buildOSX()
 		rm SDL2-2.0.10.dmg
 	else
 		# assume MacOS
-		mkdir -p "simutrans.app/Contents/Frameworks/"
-		cp "/usr/local/opt/freetype/lib/libfreetype.6.dylib" \
-			"/usr/local/opt/libpng/lib/libpng16.16.dylib" \
-			"/usr/local/opt/sdl2/lib/libSDL2-2.0.0.dylib" \
-			"simutrans.app/Contents/Frameworks/"
-		install_name_tool -change "/usr/local/opt/freetype/lib/libfreetype.6.dylib" "@rpath/../Frameworks/libfreetype.6.dylib" "simutrans.app/Contents/MacOS/simutrans"
-		install_name_tool -change "/usr/local/opt/libpng/lib/libpng16.16.dylib" "@rpath/../Frameworks/libpng16.16.dylib" "simutrans.app/Contents/MacOS/simutrans"
-		install_name_tool -change "/usr/local/opt/sdl2/lib/libSDL2-2.0.0.dylib" "@rpath/../Frameworks/libSDL2-2.0.0.dylib" "simutrans.app/Contents/MacOS/simutrans"
+	    cp -R -v ~/Frameworks/SDL2.framework  "simutrans.app/Contents/Frameworks"
 	fi
 	echo "APPL????" > "simutrans.app/Contents/PkgInfo"
 	sh ../OSX/plistgen.sh "simutrans.app" "simutrans"
-	if [ ! -d "pak" ]; then
+    if [ ! -d "pak" ]; then
 		curl --progress-bar -L -o "pak.zip" "http://downloads.sourceforge.net/project/simutrans/pak64/122-0/simupak64-122-0.zip"
 		unzip -qoC "pak.zip" -d ..
 		rm -f "pak.zip"
 	fi
+
 }
 
 # fetch language files
@@ -206,10 +201,11 @@ cd simutrans
 if [ "$OST" = "mac" ]; then
   buildOSX
   cd ..
-  ls
+  ls 
   pwd
-  zip -r -9 - simutrans > simumac.zip
+  zip -r -9 simumac.zip simutrans
   cd simutrans
+  rm -rf SDL2
   rm -rf simutrans.app
   exit 0
 else
