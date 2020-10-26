@@ -14,7 +14,7 @@ jobs:
       run: | 
         curl http://www.libsdl.org/release/SDL2-2.0.10.dmg > SDL2-2.0.10.dmg
         hdiutil attach SDL2-2.0.10.dmg >>/dev/stderr
-        cp -Rl -v /Volumes/SDL2/SDL2.framework $HOME/Library/Frameworks
+        cp -R -v /Volumes/SDL2/SDL2.framework $HOME/Library/Frameworks
         echo "ls Frameworks"  >>/dev/stderr
         ls $HOME/Library/Frameworks/ >>/dev/stderr
         hdiutil eject /Volumes/SDL2 >>/dev/stderr 
