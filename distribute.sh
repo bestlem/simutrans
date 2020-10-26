@@ -178,7 +178,7 @@ buildOSX()
 		rm SDL2-2.0.10.dmg
 	else
 		# assume MacOS done on github so SDL2 is in ~/Library/Frameworks
-	    cp -R -v ~/LibraryFrameworks/SDL2.framework  "simutrans.app/Contents/Frameworks"
+	    cp -R -v /LibraryFrameworks/SDL2.framework  "simutrans.app/Contents/Frameworks"
 	fi
 	echo "APPL????" > "simutrans.app/Contents/PkgInfo"
 	sh ../OSX/plistgen.sh "simutrans.app" "simutrans"
