@@ -1,6 +1,9 @@
 name: Nightly Built Windows
 
-on: [push]
+on:
+  push:
+    branches-ignore:
+      - '**'
 
 jobs:
   winSDL2-64:
