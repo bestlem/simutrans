@@ -31,7 +31,7 @@ jobs:
         cat config.default >>/dev/stderr
 
     - name: make
-      run: make -VERBOSE=1
+      run: make VERBOSE=1
       
     - name: distribute
       run: sh ./distribute.sh
