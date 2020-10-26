@@ -17,7 +17,7 @@ jobs:
         cp -R -v /Volumes/SDL2/SDL2.framework $HOME/Library/Frameworks/
         ls $HOME/Library/Frameworks/ >>/dev/stderr
         hdiutil eject /Volumes/SDL2 >>/dev/stderr 
-        brew install autoconf
+        brew install autoconf automake
 
     - name: setup
       run: |

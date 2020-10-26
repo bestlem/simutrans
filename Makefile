@@ -15,7 +15,9 @@ AV_FOUNDATION ?= 0
 
 ALLEGRO_CONFIG  ?= allegro-config
 SDL_CONFIG      ?= sdl-config
-SDL2_CONFIG     ?= pkg-config sdl2
+ifneq ($(OSTYPE),mac)
+ SDL2_CONFIG     ?= pkg-config sdl2
+endif
 #SDL2_CONFIG     ?= sdl2-config
 FREETYPE_CONFIG ?= freetype-config
 #FREETYPE_CONFIG ?= pkg-config freetype2
@@ -708,6 +710,12 @@ ifeq ($(OSTYPE),mingw)
   WINDRES ?= windres
 endif
 
+ifeq ($(OSTYPE),mac)
+	# need to set deployment version
+	MACOSX_DEPLOYMENT_TARGET=10.10
+	CFLAGS += -mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET)
+
+endif
 CCFLAGS  += $(CFLAGS)
 CXXFLAGS += $(CFLAGS)
 
